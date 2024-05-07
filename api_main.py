@@ -76,7 +76,7 @@ async def get_bookings(skip: int = 0, limit: int = 100, db: Session = Depends(ge
 
 # Create
 @app.post("/users", response_model=schemas.User)
-async def create_user(user: schemas.User, db: Session = Depends(get_db)):
+async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     """ユーザーを作成します。
 
     Args:
@@ -89,7 +89,7 @@ async def create_user(user: schemas.User, db: Session = Depends(get_db)):
 
 
 @app.post("/rooms", response_model=schemas.Room)
-async def create_rooms(room: schemas.Room, db: Session = Depends(get_db)):
+async def create_rooms(room: schemas.RoomCreate, db: Session = Depends(get_db)):
     """ルームを作成するエンドポイントです。
 
     Args:
@@ -102,7 +102,9 @@ async def create_rooms(room: schemas.Room, db: Session = Depends(get_db)):
 
 
 @app.post("/bookings", response_model=schemas.Booking)
-async def create_bookings(booking: schemas.Booking, db: Session = Depends(get_db)):
+async def create_bookings(
+    booking: schemas.BookingCreate, db: Session = Depends(get_db)
+):
     """ブッキングを作成するエンドポイントです。
 
     Args:
@@ -111,4 +113,5 @@ async def create_bookings(booking: schemas.Booking, db: Session = Depends(get_db
     Returns:
       dict: 作成されたブッキングの情報
     """
+    print(booking)
     return crud.create_booking(db, booking)

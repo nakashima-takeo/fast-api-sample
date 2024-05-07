@@ -32,13 +32,7 @@ class Room(Base):
 
 
 class Booking(Base):
-    """予約のモデル.
-
-    属性:   id (int): 予約の一意の識別子です。   user_id (int): 予約を行ったユーザーの識別子です。
-    room_id (int): 予約されたルームの識別子です。   start_time (datetime): 予約の開始時間です。
-    end_time (datetime): 予約の終了時間です。   created_at (datetime):
-    予約が作成されたタイムスタンプです。   updated_at (datetime): 予約が最後に更新されたタイムスタンプです。
-    """
+    """予約のモデル."""
 
     __tablename__ = "bookings"
 

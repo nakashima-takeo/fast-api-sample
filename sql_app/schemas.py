@@ -5,10 +5,9 @@ import datetime
 from pydantic import BaseModel, Field
 
 
-class Booking(BaseModel):
-    """予約のスキーマ."""
+class BookingCreate(BaseModel):
+    """予約作成用のスキーマ."""
 
-    id: int
     room_id: int
     user_id: int
     booked_num: int
@@ -21,11 +20,23 @@ class Booking(BaseModel):
         orm_mode = True
 
 
-class User(BaseModel):
-    """ユーザーのスキーマ."""
+class UserCreate(BaseModel):
+    """ユーザー作成用のスキーマ."""
+
+    name: str = Field(max_length=12)
+
+
+class RoomCreate(BaseModel):
+    """ルーム作成用のスキーマ."""
+
+    name: str = Field(max_length=12)
+    capacity: int
+
+
+class Booking(BookingCreate):
+    """予約のスキーマ."""
 
     id: int
-    name: str = Field(max_length=12)
 
     class Config:
         """設定"""
@@ -33,12 +44,21 @@ class User(BaseModel):
         orm_mode = True
 
 
-class Room(BaseModel):
+class User(UserCreate):
+    """ユーザーのスキーマ."""
+
+    id: int
+
+    class Config:
+        """設定"""
+
+        orm_mode = True
+
+
+class Room(RoomCreate):
     """ルームのスキーマ."""
 
     id: int
-    name: str = Field(max_length=12)
-    capacity: int
 
     class Config:
         """設定"""

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> list[schemas.User]:
     """データベースからユーザーを取得します。
 
     Args:
@@ -16,10 +16,11 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     Returns:
       List[User]: ユーザーのリスト
     """
-    return db.query(models.User).offset(skip).limit(limit).all()
+    result = db.query(models.User).offset(skip).limit(limit).all()
+    return [schemas.User(id=user.id, name=user.name) for user in result]
 
 
-def get_rooms(db: Session, skip: int = 0, limit: int = 100):
+def get_rooms(db: Session, skip: int = 0, limit: int = 100) -> list[schemas.Room]:
     """データベースからルームを取得します。
 
     Args:
@@ -30,10 +31,14 @@ def get_rooms(db: Session, skip: int = 0, limit: int = 100):
     Returns:
       List[Room]: ルームのリスト
     """
-    return db.query(models.Room).offset(skip).limit(limit).all()
+    result = db.query(models.Room).offset(skip).limit(limit).all()
+    return [
+        schemas.Room(id=room.id, name=room.name, capacity=room.capacity)
+        for room in result
+    ]
 
 
-def get_bookings(db: Session, skip: int = 0, limit: int = 100):
+def get_bookings(db: Session, skip: int = 0, limit: int = 100) -> list[schemas.Booking]:
     """データベースからブッキングを取得します。
 
     Args:
@@ -44,10 +49,21 @@ def get_bookings(db: Session, skip: int = 0, limit: int = 100):
     Returns:
       List[Booking]: ブッキングのリスト
     """
-    return db.query(models.Booking).offset(skip).limit(limit).all()
+    result = db.query(models.Booking).offset(skip).limit(limit).all()
+    return [
+        schemas.Booking(
+            id=booking.id,
+            room_id=booking.room_id,
+            user_id=booking.user_id,
+            booked_num=booking.booked_num,
+            start_datetime=booking.start_time,
+            end_datetime=booking.end_time,
+        )
+        for booking in result
+    ]
 
 
-def create_user(db: Session, user: schemas.User):
+def create_user(db: Session, user: schemas.UserCreate) -> schemas.User:
     """ユーザーを作成します。
 
     Args:
@@ -64,7 +80,7 @@ def create_user(db: Session, user: schemas.User):
     return db_user
 
 
-def create_room(db: Session, room: schemas.Room):
+def create_room(db: Session, room: schemas.RoomCreate) -> schemas.Room:
     """ルームを作成します。
 
     Args:
@@ -81,7 +97,7 @@ def create_room(db: Session, room: schemas.Room):
     return db_room
 
 
-def create_booking(db: Session, booking: schemas.Booking):
+def create_booking(db: Session, booking: schemas.BookingCreate) -> schemas.Booking:
     """ブッキングを作成します。
 
     Args:
@@ -101,4 +117,12 @@ def create_booking(db: Session, booking: schemas.Booking):
     db.add(db_booking)
     db.commit()
     db.refresh(db_booking)
-    return db_booking
+    res = schemas.Booking(
+        id=db_booking.id,
+        room_id=db_booking.room_id,
+        user_id=db_booking.user_id,
+        booked_num=db_booking.booked_num,
+        start_datetime=db_booking.start_time,
+        end_datetime=db_booking.end_time,
+    )
+    return res
